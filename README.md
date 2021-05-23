@@ -16,7 +16,7 @@ Aquest treball ha estat realitzat per **Gerard Rosés Terrón** i per **Gisela C
 
 Els fitxers que s'inclouen en el repositori són:  
 
-* **codi/PRACTICA1.py**: el codi de llenguatge Python amb el qual s'ha realitzat.
-* **csv/result_area_315_grade_min100_grade_max1500.csv**: les dades extretes en format .csv.
-* **PRACTICA1.pdf**: un document PDF amb les respostes a les preguntes de l'encunciat de la pràctica.
-* **El DOI (Digital Object Identifier) del joc de dades en la web** https://zenodo.org **és:** 4670438.
+* **codi/PRACTICA2.R**: el codi de llenguatge R amb el qual s'ha realitzat aquest treball.
+* **csv/world-happiness-report.csv**: les dades extretes en format .csv.
+* **csv/countryContinent.csv.csv**: les dades extretes en format .csv.
+* **PRACTICA2.pdf**: un document PDF amb les respostes a les preguntes de l'encunciat de la pràctica.
