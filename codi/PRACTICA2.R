@@ -62,3 +62,20 @@ data$continent[data$Country.name=="Venezuela"] <- data$continent[data$Country.na
 data$sub_region[data$Country.name=="Venezuela"] <- data$sub_region[data$Country.name=="Peru"][1]
 data$continent[data$Country.name=="Vietnam"] <- data$continent[data$Country.name=="Japan"][1]
 data$sub_region[data$Country.name=="Vietnam"] <- data$sub_region[data$Country.name=="Japan"][1]
+
+# Ordenament de les columnes
+data <- data[,c(1,13,12,2,4,5,6,7,8,9,10,11,3)]
+
+# Canvi de noms de les columnes
+names(data)[names(data) == "Country.name"] <- "Country"
+names(data)[names(data) == "sub_region"] <- "Region"
+names(data)[names(data) == "continent"] <- "Continent"
+names(data)[names(data) == "year"] <- "Year"
+names(data)[names(data) == "Log.GDP.per.capita"] <- "GDP per capita"
+names(data)[names(data) == "Social.support"] <- "Social support"
+names(data)[names(data) == "Healthy.live.expectancy.at.birth"] <- "Healthy live expectancy at birth"
+names(data)[names(data) == "Freedom.to.make.live.choices"] <- "Freedom to make live choices"
+names(data)[names(data) == "Perceptions.of.corruption"] <- "Perceptions of corruption"
+names(data)[names(data) == "Possitve.affect"] <- "Possitve affect"
+names(data)[names(data) == "Negative.affect"] <- "Negative affect"
+names(data)[names(data) == "Life.Ladder"] <- "Happiness rate"
