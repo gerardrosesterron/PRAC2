@@ -73,9 +73,39 @@ names(data)[names(data) == "continent"] <- "Continent"
 names(data)[names(data) == "year"] <- "Year"
 names(data)[names(data) == "Log.GDP.per.capita"] <- "GDP per capita"
 names(data)[names(data) == "Social.support"] <- "Social support"
-names(data)[names(data) == "Healthy.live.expectancy.at.birth"] <- "Healthy live expectancy at birth"
-names(data)[names(data) == "Freedom.to.make.live.choices"] <- "Freedom to make live choices"
+names(data)[names(data) == "Healthy.life.expectancy.at.birth"] <- "Healthy life expectancy at birth"
+names(data)[names(data) == "Freedom.to.make.life.choices"] <- "Freedom to make life choices"
 names(data)[names(data) == "Perceptions.of.corruption"] <- "Perceptions of corruption"
-names(data)[names(data) == "Possitve.affect"] <- "Possitve affect"
+names(data)[names(data) == "Positive.affect"] <- "Positve affect"
 names(data)[names(data) == "Negative.affect"] <- "Negative affect"
 names(data)[names(data) == "Life.Ladder"] <- "Happiness rate"
+
+# Visio generalitzada del joc de dades
+summary(data)
+str(data)
+
+# Tractament de valors nulls
+data_not_nulls <- data[complete.cases(data),c(4:13)]
+
+
+#Correlacions
+#install.packages("Hmisc")
+#install.packages(("ggplot2"))
+#install.packages("rlang")
+library("rlang")
+library("ggplot2")
+library("Hmisc")
+
+
+#res <- rcorr(as.matrix(data),type="spearman")
+correlation <-rcorr(as.matrix(data_not_nulls),type = "spearman")
+print(correlation)
+
+#install.packages("corrplot")
+library("corrplot")
+
+corrplot(cor(data_not_nulls), method = "number", type="upper", tl.col = "black", tl.cex= .6, number.cex = .7, title="Correlacions")
+
+install.packages("PerformanceAnalytics")
+#library("PerformanceAnalytics")
+chart.Correlation(data_not_nulls, histogram=TRUE, pch=19)
