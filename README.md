@@ -19,4 +19,4 @@ Els fitxers que s'inclouen en el repositori són:
 * **codi/PRACTICA2.R**: el codi de llenguatge R amb el qual s'ha realitzat aquest treball.
 * **csv/world-happiness-report.csv**: dades extretes en format .csv.
 * **csv/countryContinent.csv.csv**: dades extretes en format .csv.
-* **PRACTICA2.pdf**: un document PDF amb les respostes a les preguntes de l'encunciat de la pràctica.
+* **PRACTICA2.pdf**: No existent en aquest moment.
