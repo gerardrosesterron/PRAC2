@@ -2,22 +2,21 @@
 #https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021?select=world-happiness-report.csv
 #https://www.kaggle.com/statchaitya/countrycontinent
 
+
 # Carrega de dades desde la carpeta en local.
 whr_df <- read.csv("world-happiness-report.csv")
 countries <-read.csv("countryContinent.csv")
 
-#
+
+# Consolidació de dades en un únic joc de dades
 data <- merge(x = whr_df, y = countries, by.x ="Country.name", by.y = "country", all.x = TRUE)
+
 
 # Selecció de columnes
 data <- data[,c(1:11,16,17)]
 
-# Valors nulls de continents i regions
-summary(data$continent)
-summary(data$sub_region)
 
-
-# Correccions manuals per aliminar els valors nulls de continents i sub_regions
+# Correccions manuals per eliminar els valors nulls de continents i sub_regions
 data$continent[data$Country.name=="Bolivia"] <- data$continent[data$Country.name=="Argentina"][1]
 data$sub_region[data$Country.name=="Bolivia"] <- data$sub_region[data$Country.name=="Argentina"][1]
 data$continent[data$Country.name=="Congo (Brazzaville)"] <- data$continent[data$Country.name=="Angola"][1]
@@ -63,10 +62,12 @@ data$sub_region[data$Country.name=="Venezuela"] <- data$sub_region[data$Country.
 data$continent[data$Country.name=="Vietnam"] <- data$continent[data$Country.name=="Japan"][1]
 data$sub_region[data$Country.name=="Vietnam"] <- data$sub_region[data$Country.name=="Japan"][1]
 
+
 # Ordenament de les columnes
 data <- data[,c(1,13,12,2,4,5,6,7,8,9,10,11,3)]
 
-# Canvi de noms de les columnes
+
+# Canvi de nom de les columnes
 names(data)[names(data) == "Country.name"] <- "Country"
 names(data)[names(data) == "sub_region"] <- "Region"
 names(data)[names(data) == "continent"] <- "Continent"
@@ -80,12 +81,41 @@ names(data)[names(data) == "Positive.affect"] <- "Positve affect"
 names(data)[names(data) == "Negative.affect"] <- "Negative affect"
 names(data)[names(data) == "Life.Ladder"] <- "Happiness rate"
 
-# Visio generalitzada del joc de dades
-summary(data)
-str(data)
 
-# Tractament de valors nulls
-data_not_nulls <- data[complete.cases(data),c(4:13)]
+# Tractament de valors nulls. Substitució de valors nulls per la mitjana agrupada per pais.
+library(dplyr)
+data_without_nulls <- data %>% group_by(`Country`) %>% 
+  mutate(`GDP per capita` = ifelse(is.na(`GDP per capita`), mean(`GDP per capita`, na.rm=TRUE),`GDP per capita`),
+         `Social support` = ifelse(is.na(`Social support`), mean(`Social support`, na.rm=TRUE),`Social support`),
+         `Healthy life expectancy at birth` = ifelse(is.na(`Healthy life expectancy at birth`), mean(`Healthy life expectancy at birth`, na.rm=TRUE),`Healthy life expectancy at birth`),
+         `Freedom to make life choices` = ifelse(is.na(`Freedom to make life choices`), mean(`Freedom to make life choices`, na.rm=TRUE),`Freedom to make life choices`),
+         `Generosity` = ifelse(is.na(`Generosity`), mean(`Generosity`, na.rm=TRUE),`Generosity`),
+         `Perceptions of corruption` = ifelse(is.na(`Perceptions of corruption`), mean(`Perceptions of corruption`, na.rm=TRUE),`Perceptions of corruption`),
+         `Positve affect` = ifelse(is.na(`Positve affect`), mean(`Positve affect`, na.rm=TRUE),`Positve affect`),
+         `Negative affect` = ifelse(is.na(`Negative affect`), mean(`Negative affect`, na.rm=TRUE),`Negative affect`)
+         )
+
+# Per alguns casos on no existeix cap valor i per tant no es possible aplicar el metode anterior.
+# Es procedeix a eliminar les files que contenen valors nulls
+data_without_nulls <- data_without_nulls[complete.cases(data_without_nulls),]
+
+
+# Tractament de valors extrems
+
+data_numerical <- data_without_nulls[c(6,8:12)]
+
+COMMON_bp <-boxplot(data_numerical,main="Boxplot", las=2,srt=45)
+
+HLEAB_bp <-boxplot(data_without_nulls$`Healthy life expectancy at birth`,main="Healthy life expectancy at birth", las=2)
+GDPperC_bp <-boxplot(data_without_nulls$`GDP per capita`,main="GDP per capita", las=2)
+HR_bp <-boxplot(data_without_nulls$`Happiness rate`,main="Happiness rate", las=2)
+
+
+#############################################################################################################
+
+
+# Seleccio d'atributs per processar correlacions
+data_without_nulls <- data_without_nulls[,c(4:13)]
 
 
 #Correlacions
@@ -98,14 +128,14 @@ library("Hmisc")
 
 
 #res <- rcorr(as.matrix(data),type="spearman")
-correlation <-rcorr(as.matrix(data_not_nulls),type = "spearman")
+correlation <-rcorr(as.matrix(data_without_nulls),type = "spearman")
 print(correlation)
 
 #install.packages("corrplot")
 library("corrplot")
 
-corrplot(cor(data_not_nulls), method = "number", type="upper", tl.col = "black", tl.cex= .6, number.cex = .7, title="Correlacions")
+corrplot(cor(data_without_nulls), method = "number", type="upper", tl.col = "black", tl.cex= .6, number.cex = .7, title="Correlacions")
 
 install.packages("PerformanceAnalytics")
 #library("PerformanceAnalytics")
-chart.Correlation(data_not_nulls, histogram=TRUE, pch=19)
+chart.Correlation(data_without_nulls, histogram=TRUE, pch=19)
