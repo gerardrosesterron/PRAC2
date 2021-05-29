@@ -1,4 +1,4 @@
-#Les dades provenen de kaggle.com
+#Les dades provenen de kaggle.com.
 #https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021?select=world-happiness-report.csv
 #https://www.kaggle.com/statchaitya/countrycontinent
 
@@ -8,11 +8,11 @@ whr_df <- read.csv("world-happiness-report.csv")
 countries <-read.csv("countryContinent.csv")
 
 
-# Consolidació de dades en un únic joc de dades
+# Consolidació de dades en un únic joc de dades.
 data <- merge(x = whr_df, y = countries, by.x ="Country.name", by.y = "country", all.x = TRUE)
 
 
-# Selecció de columnes
+# Selecció de columnes.
 data <- data[,c(1:11,16,17)]
 
 
@@ -63,11 +63,11 @@ data$continent[data$Country.name=="Vietnam"] <- data$continent[data$Country.name
 data$sub_region[data$Country.name=="Vietnam"] <- data$sub_region[data$Country.name=="Japan"][1]
 
 
-# Ordenament de les columnes
+# Ordenament de les columnes.
 data <- data[,c(1,13,12,2,4,5,6,7,8,9,10,11,3)]
 
 
-# Canvi de nom de les columnes
+# Canvi de nom de les columnes.
 names(data)[names(data) == "Country.name"] <- "Country"
 names(data)[names(data) == "sub_region"] <- "Region"
 names(data)[names(data) == "continent"] <- "Continent"
@@ -96,20 +96,67 @@ data_without_nulls <- data %>% group_by(`Country`) %>%
          )
 
 # Per alguns casos on no existeix cap valor i per tant no es possible aplicar el metode anterior.
-# Es procedeix a eliminar les files que contenen valors nulls
+# Es procedeix a eliminar les files que contenen valors nulls.
 data_without_nulls <- data_without_nulls[complete.cases(data_without_nulls),]
 
 
-# Tractament de valors extrems
+# Tractament de valors extrems.
+# Considerem 3 desviacions tipiques per considerar un valor com a valor extrem.
 
-data_numerical <- data_without_nulls[c(6,8:12)]
+GDP_capita_outlier <- abs(scale(data_without_nulls$`GDP per capita`)) > 3
+sum(GDP_capita_outlier)
 
-COMMON_bp <-boxplot(data_numerical,main="Boxplot", las=2,srt=45)
+social_support_outlier <- abs(scale(data_without_nulls$`Social support`)) > 3
+sum(social_support_outlier)
 
-HLEAB_bp <-boxplot(data_without_nulls$`Healthy life expectancy at birth`,main="Healthy life expectancy at birth", las=2)
-GDPperC_bp <-boxplot(data_without_nulls$`GDP per capita`,main="GDP per capita", las=2)
-HR_bp <-boxplot(data_without_nulls$`Happiness rate`,main="Happiness rate", las=2)
+hleab_outlier <- abs(scale(data_without_nulls$`Healthy life expectancy at birth`)) > 3
+sum(hleab_outlier)
 
+ftmlc_outlier <- abs(scale(data_without_nulls$`Freedom to make life choices`)) > 3
+sum(ftmlc_outlier)
+
+generosity_outlier <- abs(scale(data_without_nulls$Generosity)) > 3
+sum(generosity_outlier)
+
+poc_outlier <- abs(scale(data_without_nulls$`Perceptions of corruption`)) > 3
+sum(poc_outlier)
+
+pa_outlier <- abs(scale(data_without_nulls$`Positve affect`)) > 3
+sum(pa_outlier)
+
+na_outlier <- abs(scale(data_without_nulls$`Negative affect`)) > 3
+sum(na_outlier)
+
+hr_outlier <- abs(scale(data_without_nulls$`Happiness rate`)) > 3
+sum(hr_outlier)
+
+
+# Es comproba que existeixen valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos
+# i en aquest joc de dades estan tots inclosos es decideix mantenir tots els registres.
+
+
+# Analisi de les dades.
+summary(data_without_nulls)
+str(data_without_nulls,give.attr = FALSE)
+
+# Analisi de les dades numèriques. es seleccionen només els valors numerics.
+data_numerical <- data_without_nulls[c(5:13)]
+
+apply(data_numerical,2,sd)
+apply(data_numerical,2,var)
+
+
+# Comprobació de la normalitat dels atributs..
+apply(data_numerical, 2, shapiro.test)
+
+shapiro.test(data_without_nulls$`GDP per capita`[data_without_nulls$Continent=='Africa'])
+plot(density(data_without_nulls$`GDP per capita`[data_without_nulls$Continent=='Africa']))
+
+shapiro.test(data_numerical$`Social support`)
+plot(density(data_numerical$`Social support`))
+
+shapiro.test(data_without_nulls$`Healthy life expectancy at birth`[data_without_nulls$Country=='Sweden' | data_without_nulls$Country=='Norway'])
+plot(density(data_without_nulls$`Healthy life expectancy at birth`[data_without_nulls$Country=='Sweden' | data_without_nulls$Country=='Norway']))
 
 #############################################################################################################
 
@@ -137,5 +184,5 @@ library("corrplot")
 corrplot(cor(data_without_nulls), method = "number", type="upper", tl.col = "black", tl.cex= .6, number.cex = .7, title="Correlacions")
 
 install.packages("PerformanceAnalytics")
-#library("PerformanceAnalytics")
+library("PerformanceAnalytics")
 chart.Correlation(data_without_nulls, histogram=TRUE, pch=19)
