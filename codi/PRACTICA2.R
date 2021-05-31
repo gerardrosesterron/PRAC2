@@ -101,37 +101,26 @@ data_without_nulls <- data_without_nulls[complete.cases(data_without_nulls),]
 
 
 # Tractament de valors extrems.
+# Analisi de les dades numèriques. es seleccionen només els valors numerics.
+data_numerical_without_nulls <- data_without_nulls[c(5:13)]
+
 # Considerem 3 desviacions tipiques per considerar un valor com a valor extrem.
+# Funció que dona la quantitat de valors extrems amb més de 3 desviacions típiques per un donat dataframe
+ourliers_function <- function(df){
+  qty_outliers_3std <- vector()
+  for(i in 1:ncol(df)) {
+    qty_outliers_3std <- c(qty_outliers_3std, sum(abs(scale(df[,i])) > 3))
+  }
+  df_out <- as.data.frame(cbind(colnames(df),qty_outliers_3std))
+  names(df_out)[names(df_out) == "V1"] <- "Atributs numerics"
+  return(df_out)
+}
 
-GDP_capita_outlier <- abs(scale(data_without_nulls$`GDP per capita`)) > 3
-sum(GDP_capita_outlier)
-
-social_support_outlier <- abs(scale(data_without_nulls$`Social support`)) > 3
-sum(social_support_outlier)
-
-hleab_outlier <- abs(scale(data_without_nulls$`Healthy life expectancy at birth`)) > 3
-sum(hleab_outlier)
-
-ftmlc_outlier <- abs(scale(data_without_nulls$`Freedom to make life choices`)) > 3
-sum(ftmlc_outlier)
-
-generosity_outlier <- abs(scale(data_without_nulls$Generosity)) > 3
-sum(generosity_outlier)
-
-poc_outlier <- abs(scale(data_without_nulls$`Perceptions of corruption`)) > 3
-sum(poc_outlier)
-
-pa_outlier <- abs(scale(data_without_nulls$`Positve affect`)) > 3
-sum(pa_outlier)
-
-na_outlier <- abs(scale(data_without_nulls$`Negative affect`)) > 3
-sum(na_outlier)
-
-hr_outlier <- abs(scale(data_without_nulls$`Happiness rate`)) > 3
-sum(hr_outlier)
+# Crida de la funció ourliers_function().
+qty_outliers <- ourliers_function(data_numerical_without_nulls)
 
 
-# Es comproba que existeixen valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos
+# Es comproba que existeixen valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos,
 # i en aquest joc de dades estan tots inclosos es decideix mantenir tots els registres.
 
 
@@ -139,18 +128,54 @@ sum(hr_outlier)
 summary(data_without_nulls)
 str(data_without_nulls,give.attr = FALSE)
 
-# Analisi de les dades numèriques. es seleccionen només els valors numerics.
-data_numerical <- data_without_nulls[c(5:13)]
 
-apply(data_numerical,2,sd)
-apply(data_numerical,2,var)
+#############################################################################################################
 
 
-# Comprobació de la normalitat dels atributs..
+# Comprobació de la normalitat dels atributs.
 apply(data_numerical, 2, shapiro.test)
 
-shapiro.test(data_without_nulls$`GDP per capita`[data_without_nulls$Continent=='Africa'])
-plot(density(data_without_nulls$`GDP per capita`[data_without_nulls$Continent=='Africa']))
+shapiro.test(data_without_nulls$`GDP per capita`)
+plot(density(data_without_nulls$`GDP per capita`))
+
+shapiro.test(data_without_nulls$`Social support`)
+plot(density(data_without_nulls$`Social support`))
+qqnorm(data_without_nulls$`Social support`);qqline(data_without_nulls$`Social support`, col = 2)
+
+ks.test(data_without_nulls$`Social support`, pnorm, mean=mean(data_without_nulls$`Social support`), sd=sd(data_without_nulls$`Social support`))
+
+ks.test(data_without_nulls$`Social support`, pnorm,)
+
+shapiro.test(data_without_nulls$`Healthy life expectancy at birth`)
+plot(density(data_without_nulls$`Healthy life expectancy at birth`))
+
+shapiro.test(data_without_nulls$`Freedom to make life choices`)
+plot(density(data_without_nulls$`Freedom to make life choices`))
+
+shapiro.test(data_without_nulls$Generosity)
+plot(density(data_without_nulls$Generosity))
+
+shapiro.test(data_without_nulls$`Perceptions of corruption`)
+plot(density(data_without_nulls$`Perceptions of corruption`))
+
+shapiro.test(data_without_nulls$`Positve affect`)
+plot(density(data_without_nulls$`Positve affect`))
+
+shapiro.test(data_without_nulls$`Negative affect`)
+plot(density(data_without_nulls$`Negative affect`))
+
+shapiro.test(data_without_nulls$`Happiness rate`)
+plot(density(data_without_nulls$`Happiness rate`))
+
+
+
+
+shapiro.test(data_without_nulls$`GDP per capita`[data_without_nulls$Country=='Italy'])
+plot(density(data_without_nulls$`GDP per capita`[data_without_nulls$Country=='Italy']))
+
+shapiro.test(data_without_nulls$`GDP per capita`[data_without_nulls$Region=='South America'])
+plot(density(data_without_nulls$`GDP per capita`[data_without_nulls$Region=='South America']))
+
 
 shapiro.test(data_numerical$`Social support`)
 plot(density(data_numerical$`Social support`))
@@ -158,7 +183,7 @@ plot(density(data_numerical$`Social support`))
 shapiro.test(data_without_nulls$`Healthy life expectancy at birth`[data_without_nulls$Country=='Sweden' | data_without_nulls$Country=='Norway'])
 plot(density(data_without_nulls$`Healthy life expectancy at birth`[data_without_nulls$Country=='Sweden' | data_without_nulls$Country=='Norway']))
 
-#############################################################################################################
+
 
 
 # Seleccio d'atributs per processar correlacions
