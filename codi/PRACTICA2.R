@@ -81,6 +81,22 @@ names(data)[names(data) == "Positive.affect"] <- "Positve affect"
 names(data)[names(data) == "Negative.affect"] <- "Negative affect"
 names(data)[names(data) == "Life.Ladder"] <- "Happiness rate"
 
+# Funció que dona la quantitat de valors nulls per un donat dataframe.
+nulls_function <- function(df){
+  qty_nulls <- vector()
+  for(i in 1:ncol(df)) {
+    qty_nulls <- c(qty_nulls, sum(is.na(df[,i])))
+  }
+  
+  df_out <- as.data.frame(cbind(colnames(df),qty_nulls))
+  names(df_out)[names(df_out) == "V1"] <- "Atributs"
+  df_out$qty_nulls <- as.numeric(as.character(df_out$qty_nulls))
+  return(df_out)
+}
+
+# Crida de la funció nulls_function().
+qty_nulls_before_treatment <- nulls_function(data)
+
 
 # Tractament de valors nulls. Substitució de valors nulls per la mitjana agrupada per pais.
 library(dplyr)
@@ -95,7 +111,17 @@ data_without_nulls <- data %>% group_by(`Country`) %>%
          `Negative affect` = ifelse(is.na(`Negative affect`), mean(`Negative affect`, na.rm=TRUE),`Negative affect`)
          )
 
-# Per alguns casos on no existeix cap valor i per tant no es possible aplicar el metode anterior.
+# Crida de la funció nulls_function().
+qty_nulls_after_treatment <- nulls_function(data_without_nulls)
+
+
+# Es pot comprobar que es redueix la quantitat de nulls de 373 a 106.
+print(paste("Abans del tractament hi han: ",sum(qty_nulls_before_treatment$qty_nulls), "valors nulls."))
+print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment$qty_nulls), "valors nulls."))
+
+
+#S'ha reduäit el nombre de nulls però no ha estat possible eliminar tots els valors nulls.
+#Perque per alguns casos on no existeix cap valor i per tant no es possible aplicar el metode anterior.
 # Es procedeix a eliminar les files que contenen valors nulls.
 data_without_nulls <- data_without_nulls[complete.cases(data_without_nulls),]
 
@@ -105,7 +131,7 @@ data_without_nulls <- data_without_nulls[complete.cases(data_without_nulls),]
 data_numerical_without_nulls <- data_without_nulls[c(5:13)]
 
 # Considerem 3 desviacions tipiques per considerar un valor com a valor extrem.
-# Funció que dona la quantitat de valors extrems amb més de 3 desviacions típiques per un donat dataframe
+# Funció que dona la quantitat de valors extrems amb més de 3 desviacions típiques per un donat dataframe.
 ourliers_function <- function(df){
   qty_outliers_3std <- vector()
   for(i in 1:ncol(df)) {
@@ -113,12 +139,15 @@ ourliers_function <- function(df){
   }
   df_out <- as.data.frame(cbind(colnames(df),qty_outliers_3std))
   names(df_out)[names(df_out) == "V1"] <- "Atributs numerics"
+  df_out$qty_outliers_3std <- as.numeric(as.character(df_out$qty_outliers_3std))
   return(df_out)
 }
 
 # Crida de la funció ourliers_function().
 qty_outliers <- ourliers_function(data_numerical_without_nulls)
 
+# La quantitat total de valors extrems (mes de 3 desviacions tipiques). 
+print(paste("Abans del tractament hi han: ",sum(qty_outliers$qty_outliers_3std), "valors nulls."))
 
 # Es comproba que existeixen valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos,
 # i en aquest joc de dades estan tots inclosos es decideix mantenir tots els registres.
