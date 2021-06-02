@@ -100,7 +100,7 @@ qty_nulls_before_treatment <- nulls_function(data)
 
 # Tractament de valors nulls. Substitució de valors nulls per la mitjana agrupada per pais.
 library(dplyr)
-data_without_nulls <- data %>% group_by(`Country`) %>% 
+data_without_nulls_AVG.imp <- data %>% group_by(`Country`) %>% 
   mutate(`GDP per capita` = ifelse(is.na(`GDP per capita`), mean(`GDP per capita`, na.rm=TRUE),`GDP per capita`),
          `Social support` = ifelse(is.na(`Social support`), mean(`Social support`, na.rm=TRUE),`Social support`),
          `Healthy life expectancy at birth` = ifelse(is.na(`Healthy life expectancy at birth`), mean(`Healthy life expectancy at birth`, na.rm=TRUE),`Healthy life expectancy at birth`),
@@ -111,24 +111,56 @@ data_without_nulls <- data %>% group_by(`Country`) %>%
          `Negative affect` = ifelse(is.na(`Negative affect`), mean(`Negative affect`, na.rm=TRUE),`Negative affect`)
          )
 
-# Crida de la funció nulls_function().
-qty_nulls_after_treatment <- nulls_function(data_without_nulls)
+# Crida de la funció nulls_function() per coprobar que ja no existeixen valors nulls.
+qty_nulls_after_treatment_AVG.imp <- nulls_function(data_without_nulls_AVG.imp)
+
 
 
 # Es pot comprobar que es redueix la quantitat de nulls de 373 a 106.
 print(paste("Abans del tractament hi han: ",sum(qty_nulls_before_treatment$qty_nulls), "valors nulls."))
-print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment$qty_nulls), "valors nulls."))
+print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment_AVG.imp$qty_nulls), "valors nulls."))
 
 
-#S'ha reduäit el nombre de nulls però no ha estat possible eliminar tots els valors nulls.
-#Perque per alguns casos on no existeix cap valor i per tant no es possible aplicar el metode anterior.
+# S'ha reduït el nombre de nulls però no ha estat possible eliminar tots els valors nulls.
+# Perque per alguns casos on no existeix cap valor i per tant no es possible aplicar el metode anterior.
 # Es procedeix a eliminar les files que contenen valors nulls.
-data_without_nulls <- data_without_nulls[complete.cases(data_without_nulls),]
+data_without_nulls_AVG.imp <- data_without_nulls_AVG.imp[complete.cases(data_without_nulls_AVG.imp),]
+
+
+
+
+# Tractament de valors nulls amb KNN de la libreria VIM.
+library(VIM)
+data_without_nulls_KNN.imp <- kNN(data, k=3)
+
+
+# Crida de la funció nulls_function() per coprobar que ja no existeixen valors nulls.
+qty_nulls_after_treatment_KNN.imp <- nulls_function(data_without_nulls_KNN.imp)
+
+
+# Es pot comprobar que es redueix la quantitat de nulls de 373 a 0.
+print(paste("Abans del tractament hi han: ",sum(qty_nulls_before_treatment$qty_nulls), "valors nulls."))
+print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment_KNN.imp$qty_nulls), "valors nulls."))
+
+
+# Selecció de les columnes amb valors ignorant així les etiquetes creades per KNN().
+data_without_nulls_KNN.imp <- data_without_nulls_KNN.imp[,c(1:13)]
+
+# Comparació dels dos mètodes
+summary(data_without_nulls_AVG.imp)
+summary(data_without_nulls_KNN.imp)
+
+# S'ha assolit l'objectiu de eliminar tots els valors nulls amb els dos mètodes
+# Amb KNN() es mantenen el nombre de registres. Mentre que pel mètode de la mitjana es perdien 71 registres.
+# Amb l'objectgiu de mantenir la majoria d'informació es tria el mètode de KNN() per la resta de l'exercici.
+
+
+
 
 
 # Tractament de valors extrems.
 # Analisi de les dades numèriques. es seleccionen només els valors numerics.
-data_numerical_without_nulls <- data_without_nulls[c(5:13)]
+data_without_nulls_KNN.imp_numerical <- data_without_nulls_KNN.imp[c(5:13)]
 
 # Considerem 3 desviacions tipiques per considerar un valor com a valor extrem.
 # Funció que dona la quantitat de valors extrems amb més de 3 desviacions típiques per un donat dataframe.
@@ -144,18 +176,15 @@ ourliers_function <- function(df){
 }
 
 # Crida de la funció ourliers_function().
-qty_outliers <- ourliers_function(data_numerical_without_nulls)
+qty_outliers <- ourliers_function(data_without_nulls_KNN.imp_numerical)
 
 # La quantitat total de valors extrems (mes de 3 desviacions tipiques). 
 print(paste("Abans del tractament hi han: ",sum(qty_outliers$qty_outliers_3std), "valors nulls."))
 
-# Es comproba que existeixen valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos,
+
+# Es comproba que existeixen 96 valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos,
 # i en aquest joc de dades estan tots inclosos es decideix mantenir tots els registres.
 
-
-# Analisi de les dades.
-summary(data_without_nulls)
-str(data_without_nulls,give.attr = FALSE)
 
 
 #############################################################################################################
