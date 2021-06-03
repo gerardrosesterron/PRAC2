@@ -1,0 +1,450 @@
+#Les dades provenen de kaggle.com.
+#https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021?select=world-happiness-report.csv
+#https://www.kaggle.com/statchaitya/countrycontinent
+
+
+# Carrega de dades desde la carpeta en local.
+whr_df <- read.csv("world-happiness-report.csv", fileEncoding="UTF-8-BOM")
+countries <-read.csv("countryContinent.csv")
+
+
+# Consolidació de dades en un únic joc de dades.
+data <- merge(x = whr_df, y = countries, by.x ="Country.name", by.y = "country", all.x = TRUE)
+
+
+# Selecció de columnes.
+data <- data[,c(1:11,16,17)]
+
+
+# Correccions manuals per eliminar els valors nulls de continents i sub_regions
+data$continent[data$Country.name=="Bolivia"] <- data$continent[data$Country.name=="Argentina"][1]
+data$sub_region[data$Country.name=="Bolivia"] <- data$sub_region[data$Country.name=="Argentina"][1]
+data$continent[data$Country.name=="Congo (Brazzaville)"] <- data$continent[data$Country.name=="Angola"][1]
+data$sub_region[data$Country.name=="Congo (Brazzaville)"] <- data$sub_region[data$Country.name=="Angola"][1]
+data$continent[data$Country.name=="Congo (Kinshasa)"] <- data$continent[data$Country.name=="Angola"][1]
+data$sub_region[data$Country.name=="Congo (Kinshasa)"] <- data$sub_region[data$Country.name=="Angola"][1]
+data$continent[data$Country.name=="Hong Kong S.A.R. of China"] <- data$continent[data$Country.name=="Japan"][1]
+data$sub_region[data$Country.name=="Hong Kong S.A.R. of China"] <- data$sub_region[data$Country.name=="Japan"][1]
+data$continent[data$Country.name=="Iran"] <- data$continent[data$Country.name=="Afghanistan"][1]
+data$sub_region[data$Country.name=="Iran"] <- data$sub_region[data$Country.name=="Afghanistan"][1]
+data$continent[data$Country.name=="Ivory Coast"] <- data$continent[data$Country.name=="Ghana"][1]
+data$sub_region[data$Country.name=="Ivory Coast"] <- data$sub_region[data$Country.name=="Ghana"][1]
+data$continent[data$Country.name=="Kosovo"] <- data$continent[data$Country.name=="Croatia"][1]
+data$sub_region[data$Country.name=="Kosovo"] <- data$sub_region[data$Country.name=="Croatia"][1]
+data$continent[data$Country.name=="Laos"] <- data$continent[data$Country.name=="Thailand"][1]
+data$sub_region[data$Country.name=="Laos"] <- data$sub_region[data$Country.name=="Thailand"][1]
+data$continent[data$Country.name=="Moldova"] <- data$continent[data$Country.name=="Ukraine"][1]
+data$sub_region[data$Country.name=="Moldova"] <- data$sub_region[data$Country.name=="Ukraine"][1]
+data$continent[data$Country.name=="North Cyprus"] <- data$continent[data$Country.name=="Cyprus"][1]
+data$sub_region[data$Country.name=="North Cyprus"] <- data$sub_region[data$Country.name=="Cyprus"][1]
+data$continent[data$Country.name=="North Macedonia"] <- data$continent[data$Country.name=="Greece"][1]
+data$sub_region[data$Country.name=="North Macedonia"] <- data$sub_region[data$Country.name=="Greece"][1]
+data$continent[data$Country.name=="Palestinian Territories"] <- data$continent[data$Country.name=="Israel"][1]
+data$sub_region[data$Country.name=="Palestinian Territories"] <- data$sub_region[data$Country.name=="Israel"][1]
+data$continent[data$Country.name=="Russia"] <- data$continent[data$Country.name=="Kazakhstan"][1]
+data$sub_region[data$Country.name=="Russia"] <- data$sub_region[data$Country.name=="Kazakhstan"][1]
+data$continent[data$Country.name=="Somaliland region"] <- data$continent[data$Country.name=="Somalia"][1]
+data$sub_region[data$Country.name=="Somaliland region"] <- data$sub_region[data$Country.name=="Somalia"][1]
+data$continent[data$Country.name=="South Korea"] <- data$continent[data$Country.name=="Japan"][1]
+data$sub_region[data$Country.name=="South Korea"] <- data$sub_region[data$Country.name=="Japan"][1]
+data$continent[data$Country.name=="Syria"] <- data$continent[data$Country.name=="Iraq"][1]
+data$sub_region[data$Country.name=="Syria"] <- data$sub_region[data$Country.name=="Iraq"][1]
+data$continent[data$Country.name=="Taiwan Province of China"] <- data$continent[data$Country.name=="China"][1]
+data$sub_region[data$Country.name=="Taiwan Province of China"] <- data$sub_region[data$Country.name=="China"][1]
+data$continent[data$Country.name=="Tanzania"] <- data$continent[data$Country.name=="Kenya"][1]
+data$sub_region[data$Country.name=="Tanzania"] <- data$sub_region[data$Country.name=="Kenya"][1]
+data$continent[data$Country.name=="United Kingdom"] <- data$continent[data$Country.name=="Ireland"][1]
+data$sub_region[data$Country.name=="United Kingdom"] <- data$sub_region[data$Country.name=="Ireland"][1]
+data$continent[data$Country.name=="United States"] <- data$continent[data$Country.name=="Canada"][1]
+data$sub_region[data$Country.name=="United States"] <- data$sub_region[data$Country.name=="Canada"][1]
+data$continent[data$Country.name=="Venezuela"] <- data$continent[data$Country.name=="Peru"][1]
+data$sub_region[data$Country.name=="Venezuela"] <- data$sub_region[data$Country.name=="Peru"][1]
+data$continent[data$Country.name=="Vietnam"] <- data$continent[data$Country.name=="Japan"][1]
+data$sub_region[data$Country.name=="Vietnam"] <- data$sub_region[data$Country.name=="Japan"][1]
+
+
+# Ordenament de les columnes.
+data <- data[,c(1,13,12,2,4,5,6,7,8,9,10,11,3)]
+
+
+# Canvi de nom de les columnes.
+names(data)[names(data) == "Country.name"] <- "Country"
+names(data)[names(data) == "sub_region"] <- "Region"
+names(data)[names(data) == "continent"] <- "Continent"
+names(data)[names(data) == "year"] <- "Year"
+names(data)[names(data) == "Log.GDP.per.capita"] <- "GDP_per_capita"
+names(data)[names(data) == "Social.support"] <- "Social_support"
+names(data)[names(data) == "Healthy.life.expectancy.at.birth"] <- "Healthy_life_expectancy_at_birth"
+names(data)[names(data) == "Freedom.to.make.life.choices"] <- "Freedom_to_make_life_choices"
+names(data)[names(data) == "Perceptions.of.corruption"] <- "Perceptions_of_corruption"
+names(data)[names(data) == "Positive.affect"] <- "Positve_affect"
+names(data)[names(data) == "Negative.affect"] <- "Negative_affect"
+names(data)[names(data) == "Life.Ladder"] <- "Happiness_rate"
+
+# Funció que dona la quantitat de valors nulls per un donat dataframe.
+nulls_function <- function(df){
+  qty_nulls <- vector()
+  for(i in 1:ncol(df)) {
+    qty_nulls <- c(qty_nulls, sum(is.na(df[,i])))
+  }
+  
+  df_out <- as.data.frame(cbind(colnames(df),qty_nulls))
+  names(df_out)[names(df_out) == "V1"] <- "Atributs"
+  df_out$qty_nulls <- as.numeric(as.character(df_out$qty_nulls))
+  return(df_out)
+}
+
+# Crida de la funció nulls_function().
+qty_nulls_before_treatment <- nulls_function(data)
+
+
+# Tractament de valors nulls. Substitució de valors nulls per la mitjana agrupada per pais.
+library(dplyr)
+data_without_nulls_AVG.imp <- data %>% group_by(`Country`) %>% 
+  mutate(`GDP_per_capita` = ifelse(is.na(`GDP_per_capita`), mean(`GDP_per_capita`, na.rm=TRUE),`GDP_per_capita`),
+         `Social_support` = ifelse(is.na(`Social_support`), mean(`Social_support`, na.rm=TRUE),`Social_support`),
+         `Healthy_life_expectancy_at_birth` = ifelse(is.na(`Healthy_life_expectancy_at_birth`), mean(`Healthy_life_expectancy_at_birth`, na.rm=TRUE),`Healthy_life_expectancy_at_birth`),
+         `Freedom_to_make_life_choices` = ifelse(is.na(`Freedom_to_make_life_choices`), mean(`Freedom_to_make_life_choices`, na.rm=TRUE),`Freedom_to_make_life_choices`),
+         `Generosity` = ifelse(is.na(`Generosity`), mean(`Generosity`, na.rm=TRUE),`Generosity`),
+         `Perceptions_of_corruption` = ifelse(is.na(`Perceptions_of_corruption`), mean(`Perceptions_of_corruption`, na.rm=TRUE),`Perceptions_of_corruption`),
+         `Positve_affect` = ifelse(is.na(`Positve_affect`), mean(`Positve_affect`, na.rm=TRUE),`Positve_affect`),
+         `Negative_affect` = ifelse(is.na(`Negative_affect`), mean(`Negative_affect`, na.rm=TRUE),`Negative_affect`)
+  )
+
+# Crida de la funció nulls_function() per coprobar que ja no existeixen valors nulls.
+qty_nulls_after_treatment_AVG.imp <- nulls_function(data_without_nulls_AVG.imp)
+
+
+
+# Es pot comprobar que es redueix la quantitat de nulls de 373 a 106.
+print(paste("Abans del tractament hi han: ",sum(qty_nulls_before_treatment$qty_nulls), "valors nulls."))
+print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment_AVG.imp$qty_nulls), "valors nulls."))
+
+
+# S'ha reduït el nombre de nulls però no ha estat possible eliminar tots els valors nulls.
+# Perque per alguns casos on no existeix cap valor i per tant no es possible aplicar el metode anterior.
+# Es procedeix a eliminar les files que contenen valors nulls.
+data_without_nulls_AVG.imp <- data_without_nulls_AVG.imp[complete.cases(data_without_nulls_AVG.imp),]
+
+
+
+
+# Tractament de valors nulls amb KNN de la libreria VIM.
+library(VIM)
+data_without_nulls_KNN.imp <- kNN(data, k=3)
+
+# Crida de la funció nulls_function() per coprobar que ja no existeixen valors nulls.
+qty_nulls_after_treatment_KNN.imp <- nulls_function(data_without_nulls_KNN.imp)
+
+
+# Es pot comprobar que es redueix la quantitat de nulls de 373 a 0.
+print(paste("Abans del tractament hi han: ",sum(qty_nulls_before_treatment$qty_nulls), "valors nulls."))
+print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment_KNN.imp$qty_nulls), "valors nulls."))
+
+
+# Selecció de les columnes amb valors ignorant així les etiquetes creades per KNN().
+data_without_nulls_KNN.imp <- data_without_nulls_KNN.imp[,c(1:13)]
+
+# Comparació dels dos mètodes
+summary(data_without_nulls_AVG.imp)
+summary(data_without_nulls_KNN.imp)
+
+# S'ha assolit l'objectiu de eliminar tots els valors nulls amb els dos mètodes
+# Amb KNN() es mantenen el nombre de registres. Mentre que pel mètode de la mitjana es perdien 71 registres.
+# Amb l'objectgiu de mantenir la majoria d'informació es tria el mètode de KNN() per la resta de l'exercici.
+
+
+
+
+
+# Tractament de valors extrems.
+# Analisi de les dades numèriques. es seleccionen només els valors numerics.
+data_without_nulls_KNN.imp_numerical <- data_without_nulls_KNN.imp[c(5:13)]
+
+# Considerem 3 desviacions tipiques per considerar un valor com a valor extrem.
+# Funció que dona la quantitat de valors extrems amb més de 3 desviacions típiques per un donat dataframe.
+ourliers_function <- function(df){
+  qty_outliers_3std <- vector()
+  for(i in 1:ncol(df)) {
+    qty_outliers_3std <- c(qty_outliers_3std, sum(abs(scale(df[,i])) > 3))
+  }
+  df_out <- as.data.frame(cbind(colnames(df),qty_outliers_3std))
+  names(df_out)[names(df_out) == "V1"] <- "Atributs numerics"
+  df_out$qty_outliers_3std <- as.numeric(as.character(df_out$qty_outliers_3std))
+  return(df_out)
+}
+
+# Crida de la funció ourliers_function().
+qty_outliers <- ourliers_function(data_without_nulls_KNN.imp_numerical)
+
+# La quantitat total de valors extrems (mes de 3 desviacions tipiques). 
+print(paste("Abans del tractament hi han: ",sum(qty_outliers$qty_outliers_3std), "valors nulls."))
+
+
+# Es comproba que existeixen 96 valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos,
+# i en aquest joc de dades estan tots inclosos es decideix mantenir tots els registres.
+
+
+
+#############################################################################################################
+
+
+# Comprobació de la normalitat dels atributs.
+apply(data_without_nulls_KNN.imp_numerical, 2, shapiro.test)
+
+shapiro.test(data_without_nulls$`GDP per capita`)
+plot(density(data_without_nulls$`GDP per capita`))
+
+shapiro.test(data_without_nulls$`Social support`)
+plot(density(data_without_nulls$`Social support`))
+qqnorm(data_without_nulls$`Social support`);qqline(data_without_nulls$`Social support`, col = 2)
+
+ks.test(data_without_nulls$`Social support`, pnorm, mean=mean(data_without_nulls$`Social support`), sd=sd(data_without_nulls$`Social support`))
+
+ks.test(data_without_nulls$`Social support`, pnorm,)
+
+shapiro.test(data_without_nulls$`Healthy life expectancy at birth`)
+plot(density(data_without_nulls$`Healthy life expectancy at birth`))
+
+shapiro.test(data_without_nulls$`Freedom to make life choices`)
+plot(density(data_without_nulls$`Freedom to make life choices`))
+
+shapiro.test(data_without_nulls$Generosity)
+plot(density(data_without_nulls$Generosity))
+
+shapiro.test(data_without_nulls$`Perceptions of corruption`)
+plot(density(data_without_nulls$`Perceptions of corruption`))
+
+shapiro.test(data_without_nulls$`Positve affect`)
+plot(density(data_without_nulls$`Positve affect`))
+
+shapiro.test(data_without_nulls$`Negative affect`)
+plot(density(data_without_nulls$`Negative affect`))
+
+shapiro.test(data_without_nulls$`Happiness rate`)
+plot(density(data_without_nulls$`Happiness rate`))
+
+
+
+
+shapiro.test(data_without_nulls$`GDP per capita`[data_without_nulls$Country=='Italy'])
+plot(density(data_without_nulls$`GDP per capita`[data_without_nulls$Country=='Italy']))
+
+shapiro.test(data_without_nulls$`GDP per capita`[data_without_nulls$Region=='South America'])
+plot(density(data_without_nulls$`GDP per capita`[data_without_nulls$Region=='South America']))
+
+
+shapiro.test(data_numerical$`Social support`)
+plot(density(data_numerical$`Social support`))
+
+shapiro.test(data_without_nulls$`Healthy life expectancy at birth`[data_without_nulls$Country=='Sweden' | data_without_nulls$Country=='Norway'])
+plot(density(data_without_nulls$`Healthy life expectancy at birth`[data_without_nulls$Country=='Sweden' | data_without_nulls$Country=='Norway']))
+
+
+
+
+# Seleccio d'atributs per processar correlacions
+data_without_nulls <- data_without_nulls[,c(4:13)]
+
+
+#Correlacions
+#install.packages("Hmisc")
+#install.packages(("ggplot2"))
+#install.packages("rlang")
+library("rlang")
+library("ggplot2")
+library("Hmisc")
+
+
+#res <- rcorr(as.matrix(data),type="spearman")
+correlation <-rcorr(as.matrix(data_without_nulls),type = "spearman")
+print(correlation)
+
+#install.packages("corrplot")
+library("corrplot")
+
+corrplot(cor(data_without_nulls), method = "number", type="upper", tl.col = "black", tl.cex= .6, number.cex = .7, title="Correlacions")
+
+install.packages("PerformanceAnalytics")
+library("PerformanceAnalytics")
+chart.Correlation(data_without_nulls, histogram=TRUE, pch=19)
+
+
+
+
+
+#################################
+
+
+#Comprovem els valors únics de les variables categòriques:
+unique(data_without_nulls_KNN.imp$Country)
+unique(data_without_nulls_KNN.imp$Continent)
+unique(data_without_nulls_KNN.imp$Region)
+
+
+data_without_nulls_KNN.imp$Years <- ifelse(data_without_nulls_KNN.imp$Year >= 2004 & data_without_nulls_KNN.imp$Year < 2010, "Before 2010",
+                                           ifelse(data_without_nulls_KNN.imp$Year >="2010" & data_without_nulls_KNN.imp$Year <=2050, "2010 or after After", 2))
+
+
+#Factoritzem Continent, Region i Year
+data_without_nulls_KNN.imp$Continent <- as.factor(data_without_nulls_KNN.imp$Continent)
+data_without_nulls_KNN.imp$Region <- as.factor(data_without_nulls_KNN.imp$Region)
+data_without_nulls_KNN.imp$Year <- as.factor(data_without_nulls_KNN.imp$Year)
+
+
+#Arrodonim el valor de Hapiness rate i creem una nova columna que indiqui si el valor de happiness és low o high
+data_without_nulls_KNN.imp$Happiness_rate <-round(data_without_nulls_KNN.imp$Happiness_rate,0)
+
+data_without_nulls_KNN.imp$Happiness <- ifelse(data_without_nulls_KNN.imp$Happiness_rate >= 0 & data_without_nulls_KNN.imp$Happiness_rate <= 4, 0,
+                                               ifelse(data_without_nulls_KNN.imp$Happiness_rate >=5 & data_without_nulls_KNN.imp$Happiness_rate <=8, 1, 2))
+
+#Factoritzem Happiness_rate i Happiness
+
+#data_without_nulls_KNN.imp$Happiness <- as.factor(data_without_nulls_KNN.imp$Happiness)
+#data_without_nulls_KNN.imp$Happiness_rate <- as.factor(data_without_nulls_KNN.imp$Happiness_rate)
+
+summary(data_without_nulls_KNN.imp)
+
+
+
+#4.1 SELECCIÓ GRUPS DE DADES. 
+
+
+#Agrupem les dades per Continent
+levels(data_without_nulls_KNN.imp$Continent)
+data.Africa <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Africa",]
+data.Americas <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Americas",]
+data.Asia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Asia",]
+data.Europe <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Europe",]
+data.Oceania <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Oceania",]
+
+
+#Agrupem les dades per Region:
+
+levels(data_without_nulls_KNN.imp$Region)
+
+data.AZ <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Australia and New Zealand",]
+data.Caribbean <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Caribbean",]
+data.CAmerica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Central America",]
+data.CAsia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Central Asia",]
+data.EAfrica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Eastern Africa",]
+data.EAsia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Eastern Asia",]
+data.EEurope <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Eastern Europe",]
+data.MAfrica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Middle Africa",]
+data.NAfrica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Northern Africa",]
+data.NAmerica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Northern America",]
+data.NEurope <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Northern Europe",]
+data.SAmerica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "South America",]
+data.SEAsia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "South-Eastern Asia",]
+data.SAfrica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Southern Africa",]
+data.SAsia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Southern Asia",]
+data.SEurope <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Southern Europe",]
+data.WAfrica <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Western Africa",]
+data.WAsia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Western Asia",]
+data.WEurope <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Region == "Western Europe",]
+
+#Agrupem les dades per any: 
+
+levels(data_without_nulls_KNN.imp$Year)
+
+data.2005 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2005",]
+data.2006 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2006",]
+data.2007 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2007",]
+data.2008 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2008",]
+data.2009 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2009",]
+data.2010 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2010",]
+data.2011 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2011",]
+data.2012 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2012",]
+data.2013 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2013",]
+data.2014 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2014",]
+data.2015 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2015",]
+data.2016 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2016",]
+data.2017 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2017",]
+data.2018 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2018",]
+data.2019 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2019",]
+data.2010 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Year == "2020",]
+
+
+
+#2.4.2. COMPROVACIÓ DE LA NORMALITAT I HOMOGENEÏTAT DE LA VARIANÇA
+
+
+#Comprovació de la normalització dels atributs: 
+#Atributs normalitzats: valors de p superior a 0.05
+shapiro.test(data_without_nulls_KNN.imp$GDP_per_capita)
+shapiro.test(data_without_nulls_KNN.imp$Social_support)
+
+shapiro.test(data_without_nulls_KNN.imp$Healthy_life_expectancy_at_birth)
+shapiro.test(data_without_nulls_KNN.imp$Freedom_to_make_life_choices)
+shapiro.test(data_without_nulls_KNN.imp$Generosity)
+shapiro.test(data_without_nulls_KNN.imp$Perceptions_of_corruption)
+shapiro.test(data_without_nulls_KNN.imp$Positve_affect)
+shapiro.test(data_without_nulls_KNN.imp$Negative_affect)
+
+
+
+#Comprovació de la homogeneïtat de la variança:
+#test de Fligner-Killeen
+
+
+# Hipotesi nulla amb un nivell de significança alpha = 0.05; si el valor p és superior a alpha, les variançes son igual, per tant hi ha homogeneïtat.
+
+
+library(car)
+
+
+fligner.test( GDP_per_capita ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Social_support ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Healthy_life_expectancy_at_birth ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Freedom_to_make_life_choices ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Generosity ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Perceptions_of_corruption ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Positve_affect ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Negative_affect ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test( Happiness_rate ~ Happiness, data = data_without_nulls_KNN.imp)
+
+#No Homogenies: Totes excepte Positive_affect
+
+
+
+# 4.3 CONTRAST D'HIPOTESI
+
+#Plantegem el contrast paramètric d’hipòtests de dos mostres sobre la diferència de les mitjes:  HIP1: mu_2009_Afr - mu_2009_Eur = 0  // HIP2:  mu_2009Afri - mu_2019Eur < 0
+
+
+
+data_2009_happiness_Eur <- data.2009[data.2009$Continent == "Europe",]$Happiness
+data_2009_happiness_Afr <- data.2009[data.2009$Continent == "Africa",]$Happiness
+
+
+t.test(data_2009_happiness_Afr,  data_2009_happiness_Eur, alternative = "less")
+
+#Obtenim un p val menor que alpha (0.05), per tant rebutgem la hipòtesi nul·la i veiem que sí afecta viure a Europa en comptes d'àfrica o no. A europa + hapiness. 
+
+data_happiness_Eur <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Europe",]$Happiness
+data_happiness_Afr <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Africa",]$Happiness
+
+
+t.test(data_2009_happiness_Afr,  data_2009_happiness_Ame, alternative = "less")
+
+
+#CORRELATION MATRIX
+
+res <- cor(data_without_nulls_KNN.imp[5:14])
+round(res, 2)
+
+
+
+
+
+#Regressio- 
+
+
+
+year_cont <- lm(Happiness~Years*Continent, data=data_without_nulls_KNN.imp)
+cat("r2 regression value:", summary(year_cont)$r.squared)
+## r2 regression value: 0.3940623
+coef(year_cont)
+
+
+#continent asia menys happiness
