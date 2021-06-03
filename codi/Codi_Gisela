@@ -282,8 +282,16 @@ unique(data_without_nulls_KNN.imp$Continent)
 unique(data_without_nulls_KNN.imp$Region)
 
 
+#Arrodonim el valor de Hapiness rate i creem una nova columna que indiqui si el valor de happiness és low o high
+data_without_nulls_KNN.imp$Happiness_rate <-round(data_without_nulls_KNN.imp$Happiness_rate,0)
+
+data_without_nulls_KNN.imp$Happiness <- ifelse(data_without_nulls_KNN.imp$Happiness_rate >= 0 & data_without_nulls_KNN.imp$Happiness_rate <= 4, 0,
+                                               ifelse(data_without_nulls_KNN.imp$Happiness_rate >=5 & data_without_nulls_KNN.imp$Happiness_rate <=8, 1, 2))
+
+
+#Creem una nova columna que indiqui si les dades són d'abans o de despres del 2010
 data_without_nulls_KNN.imp$Years <- ifelse(data_without_nulls_KNN.imp$Year >= 2004 & data_without_nulls_KNN.imp$Year < 2010, "Before 2010",
-                                           ifelse(data_without_nulls_KNN.imp$Year >="2010" & data_without_nulls_KNN.imp$Year <=2050, "2010 or after After", 2))
+                                           ifelse(data_without_nulls_KNN.imp$Year >="2010" & data_without_nulls_KNN.imp$Year <=2050, "2010 or after", 2))
 
 
 #Factoritzem Continent, Region i Year
@@ -292,11 +300,6 @@ data_without_nulls_KNN.imp$Region <- as.factor(data_without_nulls_KNN.imp$Region
 data_without_nulls_KNN.imp$Year <- as.factor(data_without_nulls_KNN.imp$Year)
 
 
-#Arrodonim el valor de Hapiness rate i creem una nova columna que indiqui si el valor de happiness és low o high
-data_without_nulls_KNN.imp$Happiness_rate <-round(data_without_nulls_KNN.imp$Happiness_rate,0)
-
-data_without_nulls_KNN.imp$Happiness <- ifelse(data_without_nulls_KNN.imp$Happiness_rate >= 0 & data_without_nulls_KNN.imp$Happiness_rate <= 4, 0,
-                                               ifelse(data_without_nulls_KNN.imp$Happiness_rate >=5 & data_without_nulls_KNN.imp$Happiness_rate <=8, 1, 2))
 
 #Factoritzem Happiness_rate i Happiness
 
@@ -412,20 +415,22 @@ fligner.test( Happiness_rate ~ Happiness, data = data_without_nulls_KNN.imp)
 #Plantegem el contrast paramètric d’hipòtests de dos mostres sobre la diferència de les mitjes:  HIP1: mu_2009_Afr - mu_2009_Eur = 0  // HIP2:  mu_2009Afri - mu_2019Eur < 0
 
 
+data_begore_2010 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Years == "Before 2010",]$Happiness
+data_after_2010 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Years == "2010 or after",]$Happiness
 
-data_2009_happiness_Eur <- data.2009[data.2009$Continent == "Europe",]$Happiness
-data_2009_happiness_Afr <- data.2009[data.2009$Continent == "Africa",]$Happiness
 
+t.test(data_after_2010,  data_begore_2010, alternative = "less")
 
-t.test(data_2009_happiness_Afr,  data_2009_happiness_Eur, alternative = "less")
-
-#Obtenim un p val menor que alpha (0.05), per tant rebutgem la hipòtesi nul·la i veiem que sí afecta viure a Europa en comptes d'àfrica o no. A europa + hapiness. 
+#
 
 data_happiness_Eur <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Europe",]$Happiness
 data_happiness_Afr <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Africa",]$Happiness
 
 
-t.test(data_2009_happiness_Afr,  data_2009_happiness_Ame, alternative = "less")
+t.test(data_happiness_Afr,  data_happiness_Eur, alternative = "less")
+
+
+#Obtenim un p val menor que alpha (0.05), per tant rebutgem la hipòtesi nul·la i veiem que sí afecta viure a Europa en comptes d'àfrica o no. A europa + hapiness. 
 
 
 #CORRELATION MATRIX
