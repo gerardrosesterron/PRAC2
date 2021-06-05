@@ -199,10 +199,11 @@ data_without_nulls_KNN.imp$Years <- ifelse(data_without_nulls_KNN.imp$Year >= 20
                                            ifelse(data_without_nulls_KNN.imp$Year >="2010" & data_without_nulls_KNN.imp$Year <=2050, "2010 or after", 2))
 
 
-#Factoritzem Continent, Region i Year
+#Factoritzem Continent, Region, Year i Years
 data_without_nulls_KNN.imp$Continent <- as.factor(data_without_nulls_KNN.imp$Continent)
 data_without_nulls_KNN.imp$Region <- as.factor(data_without_nulls_KNN.imp$Region)
 data_without_nulls_KNN.imp$Year <- as.factor(data_without_nulls_KNN.imp$Year)
+data_without_nulls_KNN.imp$Years <- as.factor(data_without_nulls_KNN.imp$Years)
 
 
 summary(data_without_nulls_KNN.imp)
@@ -232,15 +233,13 @@ data.after_2010 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Years =
 #Atributs normalitzats: valors de p superior a 0.05
 shapiro.test(data_without_nulls_KNN.imp$GDP)
 shapiro.test(data_without_nulls_KNN.imp$Social)
-
 shapiro.test(data_without_nulls_KNN.imp$Health_birth)
 shapiro.test(data_without_nulls_KNN.imp$Freedom)
 shapiro.test(data_without_nulls_KNN.imp$Generosity)
 shapiro.test(data_without_nulls_KNN.imp$Corruption)
 shapiro.test(data_without_nulls_KNN.imp$Positve_affect)
 shapiro.test(data_without_nulls_KNN.imp$Negative_affect)
-
-
+shapiro.test(data_without_nulls_KNN.imp$Happiness)
 
 #Comprovació de la homogeneïtat de la variança:
 #test de Fligner-Killeen
@@ -252,15 +251,15 @@ shapiro.test(data_without_nulls_KNN.imp$Negative_affect)
 library(car)
 
 
-fligner.test( GDP ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Social ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Health_birth ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Freedom ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Generosity ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Corruption ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Positve_affect ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Negative_affect ~ Happiness, data = data_without_nulls_KNN.imp)
-fligner.test( Happiness_rate ~ Happiness, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ GDP, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ Social, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ Health_birth, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ Freedom, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ Generosity, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ Corruption, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ Positve_affect, data = data_without_nulls_KNN.imp)
+fligner.test(Happiness ~ Negative_affect, data = data_without_nulls_KNN.imp)
+
 
 #No Homogenies: Totes excepte Positive_affect
 
@@ -272,28 +271,27 @@ fligner.test( Happiness_rate ~ Happiness, data = data_without_nulls_KNN.imp)
 
 levels (data_without_nulls_KNN.imp$Continent)
 
-data_happiness_Eur <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Europe",]$Happiness
-data_happiness_Afr <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Africa",]$Happiness
+data_happiness_Eur <- data.Europe$Happiness
+data_happiness_Afr <- data.Africa$Happiness
 
 
 t.test(data_happiness_Afr,  data_happiness_Eur, alternative = "less")
 
-data_happiness_Amr <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Americas",]$Happiness
-data_happiness_Afr <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Africa",]$Happiness
 
+data_happiness_Amr <- data.Americas$Happiness
+data_happiness_Afr <- data.Africa$Happiness
 
 t.test(data_happiness_Afr,  data_happiness_Amr, alternative = "less")
 
 
-data_happiness_Asia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Asia",]$Happiness
-data_happiness_Afr <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Africa",]$Happiness
-
+data_happiness_Asia <- data.Asia$Happiness
+data_happiness_Afr <- data.Africa$Happiness
 
 t.test(data_happiness_Afr,  data_happiness_Asia, alternative = "less")
 
-data_happiness_Oce <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Oceania",]$Happiness
-data_happiness_Afr <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Africa",]$Happiness
 
+data_happiness_Oce <- data.Oceania$Happiness
+data_happiness_Afr <- data.Africa$Happiness
 
 t.test(data_happiness_Afr,  data_happiness_Oce, alternative = "less")
 
@@ -342,9 +340,37 @@ summary(model3)$r.squared
 #El segon model és amb el que obtenim millors prediccions. 
 
 newdata1 <- data.frame(GDP = 8 , Social = 0.7 , Freedom = 0.75 , Region = "Southern Europe", Positive_affect = 0.75, Year = 2010 , Corruption = 0.85 )
-# Predecir el precio
 newdata2 <- data.frame(GDP = 10 , Social = 0.7 , Freedom = 0.75 , Region = "Southern Europe", Positive_affect = 0.75, Year = 2010 , Corruption = 0.85 )
+newdata3 <- data.frame(GDP = 8 , Social = 0.7 , Freedom = 0.75 , Region = "Southern Europe", Positive_affect = 0.75, Year = 2019 , Corruption = 0.85 )
+newdata4 <- data.frame(GDP = 10 , Social = 0.7 , Freedom = 0.75 , Region = "Southern Europe", Positive_affect = 0.75, Year = 2019 , Corruption = 0.85 )
 
 
 predict(model2, newdata1)
 predict(model2, newdata2)
+predict(model2, newdata3)
+predict(model2, newdata4)
+
+
+
+#REPRESENTACIÓ DELS RESULTATS:
+
+happiness_continent.plot <-ggplot(data_without_nulls_KNN.imp,aes(x = Continent,y = Happiness_rate, fill = Continent))
+happiness_continent.plot +geom_bar(stat="identity", position="identity")
+
+
+gdp.plot  <-ggplot(data_without_nulls_KNN.imp,aes(x = GDP, y = Happiness_rate, color = Happiness_rate))
+gdp.plot+geom_point()
+
+social.plot  <-ggplot(data_without_nulls_KNN.imp,aes(x = Social,  y = Happiness_rate, color = Happiness_rate))
+social.plot+geom_point()
+
+healthy.plot  <-ggplot(data_without_nulls_KNN.imp,aes(x = healthy, y = Happiness_rate, color = Happiness_rate))
+healthy.plot+geom_point()
+
+
+generosity.plot  <-ggplot(data_without_nulls_KNN.imp,aes(x = Generosity, y = Happiness_rate, color = Happiness_rate))
+generosity.plot+geom_point()
+
+
+#Desem el conjunt de dades net:
+write.csv(data_without_nulls_KNN.imp, row.names = TRUE)
