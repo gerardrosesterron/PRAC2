@@ -17,7 +17,7 @@ Aquest treball ha estat realitzat per **Gerard Rosés Terrón** i per **Gisela C
 Els fitxers que s'inclouen en el repositori són:  
 
 * **codi/PRACTICA2.R**: el codi de llenguatge R amb el qual s'ha realitzat aquest treball.
-* **csv/world-happiness-report.csv**: dades extretes en format .csv.
+* **csv/world-happiness-report.csv**: dades extretes en format *.csv*.
 * **csv/countryContinent.csv.csv**: dades extretes en format .csv.
 * **csv/dades_finals.csv**: dades finals guardes en format .csv.
 * **PRACTICA2.pdf**: No existent en aquest moment.
