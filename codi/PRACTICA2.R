@@ -128,7 +128,7 @@ data_without_nulls_AVG.imp <- data_without_nulls_AVG.imp[complete.cases(data_wit
 
 # Tractament de valors nulls amb KNN de la libreria VIM.
 library(VIM)
-data_without_nulls_KNN.imp <- kNN(data, k=3)
+data_without_nulls_KNN.imp <- kNN(data)
 
 # Crida de la funció nulls_function() per coprobar que ja no existeixen valors nulls.
 qty_nulls_after_treatment_KNN.imp <- nulls_function(data_without_nulls_KNN.imp)
