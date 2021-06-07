@@ -1,4 +1,4 @@
-#Les dades provenen de kaggle.com.
+﻿#Les dades provenen de kaggle.com.
 #https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021?select=world-happiness-report.csv
 #https://www.kaggle.com/statchaitya/countrycontinent
 
@@ -7,14 +7,16 @@
 whr_df <- read.csv("world-happiness-report.csv", fileEncoding="UTF-8-BOM")
 countries <-read.csv("countryContinent.csv")
 
+
 # Consolidació de dades en un únic joc de dades.
 data <- merge(x = whr_df, y = countries, by.x ="Country.name", by.y = "country", all.x = TRUE)
 
-# Selecció de columnes. (S'eliminen les dades que no ens interessen dels països, com ara el ISO code)
+
+# Selecció de columnes. (S'eliminen les dades que no ens interessen dels països. Per exempple el ISO code)
 data <- data[,c(1:11,16,17)]
 
 
-# Correccions manuals per eliminar els valors nuls de continents i sub_regions
+# Correccions manuals per eliminar els valors nuls de continents i sub_regions.
 data$continent[data$Country.name=="Bolivia"] <- data$continent[data$Country.name=="Argentina"][1]
 data$sub_region[data$Country.name=="Bolivia"] <- data$sub_region[data$Country.name=="Argentina"][1]
 data$continent[data$Country.name=="Congo (Brazzaville)"] <- data$continent[data$Country.name=="Angola"][1]
@@ -79,6 +81,7 @@ names(data)[names(data) == "Positive.affect"] <- "Positve_affect"
 names(data)[names(data) == "Negative.affect"] <- "Negative_affect"
 names(data)[names(data) == "Life.Ladder"] <- "Happiness_rate"
 
+
 # Funció que dona la quantitat de valors nulls per un donat dataframe.
 nulls_function <- function(df){
   qty_nulls <- vector()
@@ -92,11 +95,12 @@ nulls_function <- function(df){
   return(df_out)
 }
 
+
 # Crida de la funció nulls_function().
 qty_nulls_before_treatment <- nulls_function(data)
 
 
-# Tractament de valors nulls. Substitució de valors nulls per la mitjana agrupada per pais.
+# Tractament de valors nulls. Substitució de valors nulls per la mitjana agrupada per país.
 library(dplyr)
 data_without_nulls_AVG.imp <- data %>% group_by(`Country`) %>% 
   mutate(`GDP` = ifelse(is.na(`GDP`), mean(`GDP`, na.rm=TRUE),`GDP`),
@@ -109,7 +113,8 @@ data_without_nulls_AVG.imp <- data %>% group_by(`Country`) %>%
          `Negative_affect` = ifelse(is.na(`Negative_affect`), mean(`Negative_affect`, na.rm=TRUE),`Negative_affect`)
   )
 
-# Crida de la funció nulls_function() per coprobar que ja no existeixen valors nuls.
+
+# Crida de la funció nulls_function() per coprobar si existeixen valors nuls.
 qty_nulls_after_treatment_AVG.imp <- nulls_function(data_without_nulls_AVG.imp)
 
 
@@ -124,13 +129,12 @@ print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment_AVG
 data_without_nulls_AVG.imp <- data_without_nulls_AVG.imp[complete.cases(data_without_nulls_AVG.imp),]
 
 
-
-
 # Tractament de valors nulls amb KNN de la libreria VIM.
 library(VIM)
 data_without_nulls_KNN.imp <- kNN(data)
 
-# Crida de la funció nulls_function() per coprobar que ja no existeixen valors nulls.
+
+# Crida de la funció nulls_function() per coprobar si existeixen valors nulls.
 qty_nulls_after_treatment_KNN.imp <- nulls_function(data_without_nulls_KNN.imp)
 
 
@@ -142,11 +146,13 @@ print(paste("Després del tractament hi han: ",sum(qty_nulls_after_treatment_KNN
 # Selecció de les columnes amb valors ignorant així les etiquetes creades per KNN().
 data_without_nulls_KNN.imp <- data_without_nulls_KNN.imp[,c(1:13)]
 
+
 # Comparació dels dos mètodes
 summary(data_without_nulls_AVG.imp)
 summary(data_without_nulls_KNN.imp)
 
-# S'ha assolit l'objectiu de eliminar tots els valors nulls amb els dos mètodes
+
+# S'ha assolit l'objectiu d'eliminar tots els valors nulls amb els dos mètodes
 # Amb KNN() es mantenen el nombre de registres. Mentre que pel mètode de la mitjana es perdien 71 registres.
 # Amb l'objectgiu de mantenir la majoria d'informació es tria el mètode de KNN() per la resta de l'exercici.
 
@@ -155,8 +161,9 @@ summary(data_without_nulls_KNN.imp)
 # Analisi de les dades numèriques. es seleccionen només els valors numerics.
 data_without_nulls_KNN.imp_numerical <- data_without_nulls_KNN.imp[c(5:13)]
 
-# Considerem 3 desviacions tipiques per considerar un valor com a valor extrem.
-# Funció que dona la quantitat de valors extrems amb més de 3 desviacions típiques per un donat dataframe.
+
+# Considerem 3 desviacions típiques per considerar un valor com a valor extrem.
+# Funció que dona la quantitat de valors extrems per columna amb més de 3 desviacions típiques per un donat dataframe.
 ourliers_function <- function(df){
   qty_outliers_3std <- vector()
   for(i in 1:ncol(df)) {
@@ -168,11 +175,14 @@ ourliers_function <- function(df){
   return(df_out)
 }
 
+
 # Crida de la funció ourliers_function().
 qty_outliers <- ourliers_function(data_without_nulls_KNN.imp_numerical)
 
+
 # La quantitat total de valors extrems (mes de 3 desviacions tipiques). 
 print(paste("Abans del tractament hi han: ",sum(qty_outliers$qty_outliers_3std), "valors extrems"))
+
 
 # Es comproba que existeixen 96 valors extrems per aquest joc de dades. De totes maneres com que els països son molt diversos,
 # i en aquest joc de dades estan tots inclosos es decideix mantenir tots els registres.
@@ -181,14 +191,14 @@ print(paste("Abans del tractament hi han: ",sum(qty_outliers$qty_outliers_3std),
 #Desem el conjunt de dades inicial, abans d'afegir noves variables per utilitzar-lo després en la regressió lineal
 initial_dataset_KNN <- data_without_nulls_KNN.imp
 
+
 #Comprovem els valors únics de les variables categòriques:
 unique(data_without_nulls_KNN.imp$Country)
 unique(data_without_nulls_KNN.imp$Continent)
 unique(data_without_nulls_KNN.imp$Region)
 
 
-#Arrodonim el valor de Hapiness rate i creem una nova columna que indiqui si el valor de happiness és low o high
-data_without_nulls_KNN.imp$Happiness_rate <-round(data_without_nulls_KNN.imp$Happiness_rate,0)
+# Creem una nova columna que indiqui si el valor de happiness és low o high
 
 data_without_nulls_KNN.imp$Happiness <- ifelse(data_without_nulls_KNN.imp$Happiness_rate >= 0 & data_without_nulls_KNN.imp$Happiness_rate <= 4, 0,
                                                ifelse(data_without_nulls_KNN.imp$Happiness_rate >=5 & data_without_nulls_KNN.imp$Happiness_rate <=8, 1, 2))
@@ -209,7 +219,6 @@ data_without_nulls_KNN.imp$Years <- as.factor(data_without_nulls_KNN.imp$Years)
 summary(data_without_nulls_KNN.imp)
 
 
-
 #4.1 SELECCIÓ GRUPS DE DADES. 
 
 
@@ -220,6 +229,7 @@ data.Americas <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent
 data.Asia <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Asia",]
 data.Europe <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Europe",]
 data.Oceania <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Continent == "Oceania",]
+
 
 #Agrupem les dades segons siguin abans o despres del 2010
 data.before_2010 <- data_without_nulls_KNN.imp[data_without_nulls_KNN.imp$Years == "Before 2010",]
@@ -241,15 +251,13 @@ shapiro.test(data_without_nulls_KNN.imp$Positve_affect)
 shapiro.test(data_without_nulls_KNN.imp$Negative_affect)
 shapiro.test(data_without_nulls_KNN.imp$Happiness)
 
+
 #Comprovació de la homogeneïtat de la variança:
 #test de Fligner-Killeen
 
 
 # Hipotesi nulla amb un nivell de significança alpha = 0.05; si el valor p és superior a alpha, les variançes son igual, per tant hi ha homogeneïtat.
-
-
 library(car)
-
 
 fligner.test(Happiness ~ GDP, data = data_without_nulls_KNN.imp)
 fligner.test(Happiness ~ Social, data = data_without_nulls_KNN.imp)
@@ -259,21 +267,19 @@ fligner.test(Happiness ~ Generosity, data = data_without_nulls_KNN.imp)
 fligner.test(Happiness ~ Corruption, data = data_without_nulls_KNN.imp)
 fligner.test(Happiness ~ Positve_affect, data = data_without_nulls_KNN.imp)
 fligner.test(Happiness ~ Negative_affect, data = data_without_nulls_KNN.imp)
-
-
 #No Homogenies: Totes excepte Positive_affect
-
 
 
 # 4.3 CONTRAST D'HIPOTESI
 
-#Plantegem el contrast paramètric d’hipòtests de dos mostres sobre la diferència de les mitjes:  HIP1: mu_2009_Afr - mu_2009_Eur = 0  // HIP2:  mu_2009Afri - mu_2019Eur < 0
+
+# Plantegem el contrast paramètric d’hipòtests de dos mostres sobre la diferència de les mitjes:  
+# HIP1: mu_2009_Afr - mu_2009_Eur = 0  // HIP2:  mu_2009Afri - mu_2019Eur < 0
 
 levels (data_without_nulls_KNN.imp$Continent)
 
 data_happiness_Eur <- data.Europe$Happiness
 data_happiness_Afr <- data.Africa$Happiness
-
 
 t.test(data_happiness_Afr,  data_happiness_Eur, alternative = "less")
 
@@ -296,17 +302,16 @@ data_happiness_Afr <- data.Africa$Happiness
 t.test(data_happiness_Afr,  data_happiness_Oce, alternative = "less")
 
 
-#Obtenim un p val menor que alpha (0.05), per tant rebutgem la hipòtesi nul·la i veiem que sí afecta negativament viure a Africa en comptes d'àfrica o no. A europa + hapiness. 
+# Obtenim un p val menor que alpha (0.05), per tant rebutgem la hipòtesi nul·la i veiem que sí afecta negativament viure a Africa. A europa més hapiness. 
 
 
-#CORRELATION MATRIX
+# CORRELATION MATRIX
 
 res <- cor(data_without_nulls_KNN.imp[5:14])
 round(res, 2)
 
 
-
-#REGRESSIO
+# REGRESSIO
 
 GDP = initial_dataset_KNN$GDP
 Social = initial_dataset_KNN$Social
@@ -320,11 +325,9 @@ Year = initial_dataset_KNN$Year
 Region = initial_dataset_KNN$Region
 
 
-#Variable a predir
+# Variable a predir
 
 hap_rate = initial_dataset_KNN$Happiness_rate
-
-
 
 
 model1 <- lm(hap_rate ~ Social  + Freedom + Region + Positive_affect + Year +  Continent + Negative_affect + Corruption, data = initial_dataset_KNN)
@@ -337,7 +340,7 @@ summary(model2)$r.squared
 summary(model3)$r.squared
 
 
-#El segon model és amb el que obtenim millors prediccions. 
+# El segon model és amb el que obtenim millors prediccions. 
 
 newdata1 <- data.frame(GDP = 8 , Social = 0.7 , Freedom = 0.75 , Region = "Southern Europe", Positive_affect = 0.75, Year = 2010 , Corruption = 0.85 )
 newdata2 <- data.frame(GDP = 10 , Social = 0.7 , Freedom = 0.75 , Region = "Southern Europe", Positive_affect = 0.75, Year = 2010 , Corruption = 0.85 )
@@ -352,10 +355,10 @@ predict(model2, newdata4)
 
 
 
-#REPRESENTACIÓ DELS RESULTATS:
+# REPRESENTACIÓ DELS RESULTATS:
 
 happiness_continent.plot <-ggplot(data_without_nulls_KNN.imp,aes(x = Continent,y = Happiness_rate, fill = Continent))
-happiness_continent.plot +geom_bar(stat="identity", position="identity")
+happiness_continent.plot + geom_bar(stat="identity", position="identity") 
 
 
 gdp.plot  <-ggplot(data_without_nulls_KNN.imp,aes(x = GDP, y = Happiness_rate, color = Happiness_rate))
@@ -367,10 +370,9 @@ social.plot+geom_point()
 healthy.plot  <-ggplot(data_without_nulls_KNN.imp,aes(x = healthy, y = Happiness_rate, color = Happiness_rate))
 healthy.plot+geom_point()
 
-
 generosity.plot  <-ggplot(data_without_nulls_KNN.imp,aes(x = Generosity, y = Happiness_rate, color = Happiness_rate))
 generosity.plot+geom_point()
 
 
 #Desem el conjunt de dades net:
-write.csv(data_without_nulls_KNN.imp, row.names = TRUE)
+write.csv(data_without_nulls_KNN.imp, row.names = TRUE, file = "dades_finals.csv")

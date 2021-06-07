@@ -20,4 +20,4 @@ Els fitxers que s'inclouen en el repositori són:
 * **csv/world-happiness-report.csv**: dades extretes en format *.csv*.
 * **csv/countryContinent.csv.csv**: dades extretes en format *.csv*.
 * **csv/dades_finals.csv**: dades finals guardes en format *.csv*.
-* **PRACTICA2.pdf**: No existent en aquest moment.
+* **PRACTICA2.pdf**: Document de text que conté les explicacions de la feina feta que es demana a cada apartat.
